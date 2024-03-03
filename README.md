@@ -15,7 +15,7 @@ Example pictures of outcome:
 
 ### Roadmap:
 
-- ~~Lots of forhead planning~~
+- ~~Lots of pre-planning~~
 - ~~GraphQL query plan~~
 - ~~Create website with simple map (leaflet)~~
 - ~~First hexagon by click~~
