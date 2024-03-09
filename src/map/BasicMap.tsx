@@ -2,6 +2,7 @@ import { MapContainer, TileLayer, useMapEvents, Polygon } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useState, useEffect } from 'react'
 import { LeafletMouseEvent } from 'leaflet'
+import { sendNewPoint } from '../services/PointsSevice'
 
 const BasicMap = () => {
     const [markerPosition, setMarkerPosition] = useState<{lat: number, lng:number}|null>(null)
@@ -20,7 +21,7 @@ const BasicMap = () => {
         })
         if (hexagons.length !== 0){
             return (
-                <Polygon pathOptions={{ fillColor: 'purple', fillOpacity:0.4, color:undefined, fillRule:"nonzero"}} positions={hexagons} />
+                <Polygon pathOptions={{ fillColor: 'purple', fillOpacity:0.4, color:undefined, /*fillRule:"nonzero"*/}} positions={hexagons} />
             )
         }
         return null
@@ -35,6 +36,7 @@ const BasicMap = () => {
 
     const SelectionConfimed = (e: LeafletMouseEvent) =>{
         setMarkerPosition(e.latlng)
+        sendNewPoint(e.latlng)
     }
 
     const DrawPolygon = (markerPosition: {lat: number, lng:number}) => {

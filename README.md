@@ -2,6 +2,8 @@
 
 The idea is to create a website that shows time estimates for public transportation in  Helsinki's capital area.
 
+Link to api: [Hsl estimated time zones api](https://github.com/HeidiJoensuu/hsl_estimated_timezones_api)
+
 ### Simple idea: 
 
 
@@ -20,7 +22,7 @@ Example pictures of outcome:
 - ~~Create website with simple map (leaflet)~~
 - ~~First hexagon by click~~
 - ~~Implement working WebSocket in server~~
-- Getting client and server to communicate via WebSocket
+- ~~Getting client and server to communicate via WebSocket~~
 - Implement GraphQL to call HSL open API
 - At first create new hexagons in different colors
 - Calculate the coordinate of the center points of the hexagons (first six) and return them
