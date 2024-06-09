@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import logo from './logo.svg';
 import BasicMap from './map/BasicMap';
 import './App.css';
-import { recieveInformation } from './services/PointsSevice';
+import { useAppDispatch } from './utils/hooks';
 
-function App() {
-  recieveInformation()
+const App = () => {
+  const dispatch = useAppDispatch()
+
+  /*useEffect(() => {
+    dispatch(recieveNewPoint())
+    console.log("moi");
+    
+  }, [dispatch])
+  */
+
   return (
     <div className="App">
       <BasicMap />

@@ -1,7 +1,7 @@
 import { config } from "../utils/config"
 
 const webSocket = new WebSocket(config.url)
-
+/*
 const isOpen = () => { return webSocket.readyState === webSocket.OPEN }
 
 export const openingSocket = () => {
@@ -21,3 +21,4 @@ export const recieveInformation = () => {
         console.log(event.data)
     }
 }
+*/
