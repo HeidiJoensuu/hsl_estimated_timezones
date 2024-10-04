@@ -1,6 +1,6 @@
 import { config } from "../utils/config"
 
-const webSocket = new WebSocket(config.url)
+//const webSocket = new WebSocket(config.url)
 /*
 const isOpen = () => { return webSocket.readyState === webSocket.OPEN }
 

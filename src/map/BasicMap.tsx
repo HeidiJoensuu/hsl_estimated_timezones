@@ -5,12 +5,14 @@ import { LeafletMouseEvent } from 'leaflet'
 //import { sendNewPoint } from '../services/PointsSevice'
 import { useAppSelector, useAppDispatch } from '../utils/hooks'
 //import { useGetPointsQuery } from '../reducers/api'
-import {useAddPointMutation, useGetPointQuery} from '../reducers/api'
+import {useGetMessagesQuery} from '../reducers/api'
+import { socket } from '../socket'
 
 const BasicMap = () => {
     const dispatch = useAppDispatch()
-    const { data, error } = useGetPointQuery('')
-    const [addPost] = useAddPointMutation()
+    const { data, error } = useGetMessagesQuery('')
+    const ws = socket
+    //const [addPost] = useAddPointMutation()
     const [jtn, setJtn] = useState(undefined)
     const [markerPosition, setMarkerPosition] = useState<{lat: number, lng:number}|null>(null)
     const [hexagons, setHexagons] = useState<({ lat: number; lng: number; }[])[]>([])
@@ -18,14 +20,12 @@ const BasicMap = () => {
     useEffect(() => {
         if (markerPosition) DrawPolygon(markerPosition)
     }, [markerPosition])
-    //console.log(data);
-    
-
+    console.log(data);
 
     const Kokeilu = () =>{
         const map = useMapEvents({
             click(e) {
-                console.log(typeof(e.latlng), e.latlng);
+                //console.log(typeof(e.latlng), e.latlng);
                 SelectionConfimed(e)
             }
         })
@@ -39,7 +39,7 @@ const BasicMap = () => {
     const handleAddPost = async (coords: { lat: number; lng: number; }) => {
         try {
             console.log("yritys 1:", coords);
-            await addPost(coords)
+            ws.send(JSON.stringify(coords))
 
         } catch (error) {
           console.log(error);

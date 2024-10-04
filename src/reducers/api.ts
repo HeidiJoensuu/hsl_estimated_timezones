@@ -1,25 +1,37 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { config } from "../utils/config"
-console.log(config.url);
+import { socket } from '../socket';
+import { createEntityAdapter } from '@reduxjs/toolkit';
+//import { socket } from '../socket';
 
-interface Coords { lat: number; lng: number; }
+//console.log(config.url);
+
+export type Channel = 'redux' | 'general'
+
+export interface Coords {
+  id: number
+  lat: number;
+  lng: number;
+}
 
 export const api = createApi({
-    baseQuery: fetchBaseQuery({
-      baseUrl: config.url,
-    }),
-    endpoints: (build) => ({
-      getPoint: build.query<Coords, string>({
-        query: () => 'points'
-      }),
-      addPoint: build.mutation<Coords, Partial<Coords>>({
-        query: (body) => ({
-          url: '',
-          method: 'POST',
-          body
+  baseQuery: fetchBaseQuery({ baseUrl: '/' }),
+  endpoints: (build) => ({
+    getMessages: build.query<Coords[], void>({
+      queryFn: () => ({ data: [] }),
+      async onCacheEntryAdded(arg, { updateCachedData, cacheEntryRemoved }) {
+        const ws = socket
+        ws.addEventListener('message', (event) => {
+          updateCachedData((draft) => {
+            draft.push(JSON.parse(event.data))
+          })
         })
-      })
-    })
+        await cacheEntryRemoved
+        ws.close()
+      },
+    }),
+  }),
 })
 
-export const {useGetPointQuery, useAddPointMutation} = api
+
+export const { useGetMessagesQuery } = api
