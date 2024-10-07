@@ -2,6 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { config } from "../utils/config"
 import { socket } from '../socket';
 import { createEntityAdapter } from '@reduxjs/toolkit';
+import { CoordinatesResponse } from '../types/types';
 //import { socket } from '../socket';
 
 //console.log(config.url);
@@ -17,7 +18,7 @@ export interface Coords {
 export const api = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: '/' }),
   endpoints: (build) => ({
-    getMessages: build.query<Coords[], void>({
+    getMessages: build.query<CoordinatesResponse[], void>({
       queryFn: () => ({ data: [] }),
       async onCacheEntryAdded(arg, { updateCachedData, cacheEntryRemoved }) {
         const ws = socket

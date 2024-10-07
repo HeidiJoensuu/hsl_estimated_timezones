@@ -1,51 +1,71 @@
-import { MapContainer, TileLayer, useMapEvents, Polygon } from 'react-leaflet'
+import { MapContainer, TileLayer, useMapEvents, Polygon, LayerGroup } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useState, useEffect } from 'react'
 import { LeafletMouseEvent } from 'leaflet'
 //import { sendNewPoint } from '../services/PointsSevice'
 import { useAppSelector, useAppDispatch } from '../utils/hooks'
 //import { useGetPointsQuery } from '../reducers/api'
-import {useGetMessagesQuery} from '../reducers/api'
+import { useGetMessagesQuery } from '../reducers/api'
 import { socket } from '../socket'
+import { CoordinatesResponse, Coords, HexagonsList } from '../types/types'
 
 const BasicMap = () => {
     const dispatch = useAppDispatch()
-    const { data, error } = useGetMessagesQuery('')
+    const { data, error } = useGetMessagesQuery()
     const ws = socket
     //const [addPost] = useAddPointMutation()
     const [jtn, setJtn] = useState(undefined)
-    const [markerPosition, setMarkerPosition] = useState<{lat: number, lng:number}|null>(null)
-    const [hexagons, setHexagons] = useState<({ lat: number; lng: number; }[])[]>([])
+    const [dataLength, setDataLength] = useState(0)
+    const [markerPosition, setMarkerPosition] = useState<{ lat: number, lng: number } | null>(null)
+    const [hexagons, setHexagons] = useState<HexagonsList[]>([])
 
     useEffect(() => {
-        if (markerPosition) DrawPolygon(markerPosition)
-    }, [markerPosition])
-    console.log(data);
+        if (data?.length && data.length > 0) {
+            if (data.length != hexagons.length) {
+                const listToCheck = data.filter(point => !hexagons.find(hexa => hexa.id == point.id))
+                listToCheck.forEach(item => DrawPolygon(item))
+            }
+            
+        }
+    }, [data])
 
-    const Kokeilu = () =>{
+    console.log("data: ", data);
+    
+    const Kokeilu = () => {
+
         const map = useMapEvents({
             click(e) {
                 //console.log(typeof(e.latlng), e.latlng);
                 SelectionConfimed(e)
             }
         })
-        if (hexagons.length !== 0){
+        console.log(hexagons);
+
+        if (hexagons.length !== 0) {
             return (
-                <Polygon pathOptions={{ fillColor: 'purple', fillOpacity:0.4, color:undefined, /*fillRule:"nonzero"*/}} positions={hexagons} />
+                <>
+                    {hexagons.map(hexa =>
+                        <Polygon pathOptions={{ fillColor: getColour(), fillOpacity: 0.4, color: undefined, fillRule: "nonzero" }} positions={hexa.coords} />
+                    )}
+                </>
             )
         }
         return null
     }
+
+    const getColour = () => {
+        const colours = ["green", "#3388ff", "purple", "red", "black"]
+        return colours[Math.floor(Math.random() * colours.length)]
+    }
+
     const handleAddPost = async (coords: { lat: number; lng: number; }) => {
         try {
-            console.log("yritys 1:", coords);
             ws.send(JSON.stringify(coords))
-
         } catch (error) {
-          console.log(error);
+            console.log(error);
         }
-      }
-    
+    }
+
     /**
      * Creates popup to selected point.
      */
@@ -53,9 +73,8 @@ const BasicMap = () => {
 
     }
 
-    const SelectionConfimed = (e: LeafletMouseEvent) =>{
-        setMarkerPosition(e.latlng)
-        //sendNewPoint(e.latlng)
+    const SelectionConfimed = (e: LeafletMouseEvent) => {
+        DrawPolygon({id: "aloitus", coordinates: e.latlng})
         handleAddPost(e.latlng)
     }
 
@@ -63,24 +82,26 @@ const BasicMap = () => {
      * Draws a new polygon
      * @param markerPosition 
      */
-    const DrawPolygon = (markerPosition: {lat: number, lng:number}) => {
+    const DrawPolygon = (markerPosition: CoordinatesResponse) => {
+        console.log(markerPosition);
+
         const r: number = 0.0017
         const a = 2 * Math.PI / 6;
-        const newDraw: {lat: number, lng:number}[] = []
+        const newDraw: Coords[] = []
         for (let i = 0; i < 6; i++) {
-            newDraw.push({lat: markerPosition.lat + r * Math.cos(a * i), lng:markerPosition.lng + r * Math.sin(a * i)})
+            newDraw.push({ lat: markerPosition.coordinates.lat + r * Math.cos(a * i), lng: markerPosition.coordinates.lng + r * Math.sin(a * i) })
         }
-        setHexagons(hexagons => [...hexagons, newDraw])
+        setHexagons(hexagons => [...hexagons, {id: markerPosition.id, coords: newDraw}])
     }
 
     return (
-        <div style={{height:"400px"}}>
+        <div style={{ height: "400px" }}>
             <MapContainer center={[60.230147, 24.808932]} zoom={13} scrollWheelZoom={true} className="map">
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-            <Kokeilu />
+                <Kokeilu />
             </MapContainer>
         </div>
     )
