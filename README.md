@@ -23,15 +23,14 @@ Example pictures of outcome:
 - ~~First hexagon by click~~
 - ~~Implement working WebSocket in server~~
 - ~~Getting client and server to communicate via WebSocket~~
-- Implement GraphQL to call HSL open API
-- At first create new hexagons in different colors
-- Calculate the coordinate of the center points of the hexagons (first six) and return them
-- Client draws new hexagons in different color
+- ~~Implement GraphQL to call HSL open API~~
+- ~~At first create new hexagons in different colors~~
+- ~~Calculate the coordinate of the center points of the hexagons (first six) and return them~~
+- Set the hexagon colors in relation as time and color
 - Default setting for first reguests: 8 AM in next morning.
 - Server sends request of the calculated coordinates to HSL open API
 - Modify calculator of coordinates to wait response from HSL open API before starting to calculate new hexagons. (Answer: forward, no answer: stop) Do this x times for now.
-- Client draws hexagons in given colour order.
-- Planning for colorblind version
+- Planning for colorblind version (?)
 - and more...
 
 
