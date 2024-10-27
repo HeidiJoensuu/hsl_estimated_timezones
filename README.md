@@ -28,9 +28,10 @@ Example pictures of outcome:
 - ~~Calculate the coordinate of the center points of the hexagons (first six) and return them~~
 - Set the hexagon colors in relation as time and color
 - Default setting for first reguests: 8 AM in next morning.
-- Server sends request of the calculated coordinates to HSL open API
-- Modify calculator of coordinates to wait response from HSL open API before starting to calculate new hexagons. (Answer: forward, no answer: stop) Do this x times for now.
+- ~~Server sends request of the calculated coordinates to HSL open API~~
+- ~~Modify calculator of coordinates to wait response from HSL open API before starting to calculate new hexagons. (Answer: forward, no answer: stop) Do this x times for now.~~
 - Planning for colorblind version (?)
+- Multi threading (?)
 - and more...
 
 
