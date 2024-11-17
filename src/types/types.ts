@@ -12,3 +12,9 @@ export type HexagonsList = {
   id: string,
   coords: Coords[]
 }
+
+export type SendMessage = {
+  coordinates: Coords
+  date: string
+  time: string
+}

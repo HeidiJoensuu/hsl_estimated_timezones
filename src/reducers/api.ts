@@ -24,6 +24,8 @@ export const api = createApi({
         const ws = socket
         ws.addEventListener('message', (event) => {
           updateCachedData((draft) => {
+            console.log("data: ", event.data);
+            
             draft.push(JSON.parse(event.data))
           })
         })

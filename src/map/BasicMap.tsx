@@ -7,45 +7,42 @@ import { useAppSelector, useAppDispatch } from '../utils/hooks'
 //import { useGetPointsQuery } from '../reducers/api'
 import { useGetMessagesQuery } from '../reducers/api'
 import { socket } from '../socket'
-import { CoordinatesResponse, Coords, HexagonsList } from '../types/types'
+import { CoordinatesResponse, Coords, HexagonsList, SendMessage } from '../types/types'
 
 const BasicMap = () => {
     const dispatch = useAppDispatch()
     const { data, error } = useGetMessagesQuery()
     const ws = socket
-    //const [addPost] = useAddPointMutation()
-    const [jtn, setJtn] = useState(undefined)
-    const [dataLength, setDataLength] = useState(0)
     const [markerPosition, setMarkerPosition] = useState<{ lat: number, lng: number } | null>(null)
+    const [listToDraw, setListToDraw] = useState<CoordinatesResponse[]>([])
     const [hexagons, setHexagons] = useState<HexagonsList[]>([])
 
     useEffect(() => {
         if (data?.length && data.length > 0) {
-            if (data.length != hexagons.length) {
-                const listToCheck = data.filter(point => !hexagons.find(hexa => hexa.id == point.id))
+            if (data.length != listToDraw.length) {
+                const listToCheck = data.filter(point => !listToDraw.find(hexa => hexa.id == point.id))
+                listToDraw.concat(listToCheck)
                 listToCheck.forEach(item => DrawPolygon(item))
             }
-            
         }
-    }, [data])
+        
+        
+    }, [data, hexagons])
 
-    console.log("data: ", data);
     
     const Kokeilu = () => {
 
         const map = useMapEvents({
             click(e) {
-                //console.log(typeof(e.latlng), e.latlng);
                 SelectionConfimed(e)
             }
         })
-        console.log(hexagons);
 
         if (hexagons.length !== 0) {
             return (
                 <>
                     {hexagons.map(hexa =>
-                        <Polygon pathOptions={{ fillColor: getColour(), fillOpacity: 0.4, color: undefined, fillRule: "nonzero" }} positions={hexa.coords} />
+                        <Polygon pathOptions={{ fillColor: getColour(), fillOpacity: 0.4, color: undefined, fillRule: "nonzero" }} positions={hexa.coords} /*key={hexa.id}*//>
                     )}
                 </>
             )
@@ -60,7 +57,14 @@ const BasicMap = () => {
 
     const handleAddPost = async (coords: { lat: number; lng: number; }) => {
         try {
-            ws.send(JSON.stringify(coords))
+            const date1 = new Date()
+            const sendMessage: SendMessage = {
+                coordinates: coords,
+                date: `${date1.getFullYear()}-${date1.getMonth()+1}-${date1.getDate()+1}`,
+                time: "08:00:00"
+            }
+            
+            ws.send(JSON.stringify(sendMessage))
         } catch (error) {
             console.log(error);
         }
@@ -83,15 +87,19 @@ const BasicMap = () => {
      * @param markerPosition 
      */
     const DrawPolygon = (markerPosition: CoordinatesResponse) => {
-        console.log(markerPosition);
-
-        const r: number = 0.0017
-        const a = 2 * Math.PI / 6;
-        const newDraw: Coords[] = []
-        for (let i = 0; i < 6; i++) {
-            newDraw.push({ lat: markerPosition.coordinates.lat + r * Math.cos(a * i), lng: markerPosition.coordinates.lng + r * Math.sin(a * i) })
+        console.log(!hexagons.find(k => k.id === markerPosition.id));
+        
+        if (!hexagons.find(k => k.id === markerPosition.id) ){
+            console.log(markerPosition);
+            
+            const r: number = 0.0025
+            const a = 2 * Math.PI / 6;
+            const newDraw: Coords[] = []
+            for (let i = 0; i < 6; i++) {
+                newDraw.push({ lat: markerPosition.coordinates.lat + r * Math.cos(a * i), lng: markerPosition.coordinates.lng + r * Math.sin(a * i) })
+            }
+            setHexagons(hexagons => [...hexagons, {id: markerPosition.id, coords: newDraw}])
         }
-        setHexagons(hexagons => [...hexagons, {id: markerPosition.id, coords: newDraw}])
     }
 
     return (
